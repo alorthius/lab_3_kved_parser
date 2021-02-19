@@ -10,57 +10,49 @@ kved_dict = read_file('path')
 # pprint(kved_dict)
 
 
-def create_dictionary(kved_dict: dict, class_code: str):
-    new_dict = {}
+def create_subdict(name: str, type_value: str, num_children: int, parent: str) -> dict:
+    subdict = {}
+    subdict['name'] = name
+    subdict['type'] = type_value
+    if num_children:
+        subdict['num_children'] = num_children
+    if parent:
+        subdict['parent'] = parent
+    return subdict
 
+
+def create_dictionary(kved_dict: dict, class_code: str):
     division_code = class_code[:2]
     group_code = class_code[:-1]
-    print(division_code, group_code)
-    print()
 
     for lst in kved_dict['sections']:
         all_sections = lst
 
     for section_index in range(len(all_sections)):
         section_code = all_sections[section_index]['sectionCode']
-
-        section_dict = {}
-        section_dict['name'] = section_code
-        section_dict['type'] = 'section'
-        section_dict['num_children'] = len(all_sections[section_index]['divisions'])
-        # print(section_dict)
+        num_children = len(all_sections[section_index]['divisions'])
+        section_dict = create_subdict(section_code, 'section', num_children, None)
 
         for division in range(len(all_sections[section_index]['divisions'])):
-            # print(all_sections[section_index]['divisions'][division].keys())
-
             if division_code != all_sections[section_index]['divisions'][division]['divisionCode']:
                 continue
             division_name = all_sections[section_index]['divisions'][division]['divisionName']
-            division_dict = {}
-            division_dict['name'] = division_name
-            division_dict['type'] = 'division'
-            division_dict['num_children'] = len(all_sections[section_index]['divisions'][division]['groups'])
-            division_dict['parent'] = section_dict
+            num_children = len(all_sections[section_index]['divisions'][division]['groups'])
+            division_dict = create_subdict(division_name, 'division', num_children, section_dict)
 
             for group in all_sections[section_index]['divisions'][division]['groups']:
                 if group_code != group['groupCode']:
                     continue
+                group_name = group['groupName']
+                num_children = len(group['classes'])
+                group_dict = create_subdict(group_name, 'group', num_children, division_dict)
 
-                group_dict = {}
-                group_dict['name'] = group['groupName']
-                group_dict['type'] = 'group'
-                group_dict['num_children'] = len(group['classes'])
-                group_dict['parent'] = division_dict
-                
                 for class_dict in group['classes']:
-
                     if class_code == class_dict['classCode']:
-                        print(class_dict['className'])
-                        new_dict['name'] = class_dict['className']
-                        new_dict['type'] = 'class'
-                        new_dict['parent'] = group_dict
+                        class_name = class_dict['className']
+                        final_dict = create_subdict(class_name, 'class', None, group_dict)
 
-    return new_dict
+    return final_dict
 
 class_code = "01.11"
 pprint(create_dictionary(kved_dict, class_code))
