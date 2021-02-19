@@ -1,15 +1,23 @@
+"""
+GitHub link: https://github.com/alorthius/lab_3_kved_parser
+"""
 import json
-from pprint import pprint
 from collections import OrderedDict
 
 
 def read_file(path: str) -> dict:
+    if not isinstance(path, str):
+        return None
+
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
     return data
 
 
 def create_subdict(name: str, type_value: str, num_children: int, parent: str) -> dict:
+    if not isinstance(name, str) or not isinstance(type_value, str):
+        return None
+
     subdict = OrderedDict()
     subdict['name'] = name
     subdict['type'] = type_value
@@ -21,6 +29,9 @@ def create_subdict(name: str, type_value: str, num_children: int, parent: str) -
 
 
 def create_dictionary(kved_dict: dict, class_code: str):
+    if not isinstance(kved_dict, dict) or not isinstance(class_code, str):
+        return None
+
     division_code = class_code[:2]
     group_code = class_code[:-1]
 
@@ -56,16 +67,25 @@ def create_dictionary(kved_dict: dict, class_code: str):
                         final_dict = create_subdict(
                             class_name, 'class', None, group_dict)
 
-    return final_dict
+    try:
+        return final_dict
+    except UnboundLocalError:  # found no class like class_code
+        return None
 
 
 def write_file(kved_dict: dict):
+    if not isinstance(kved_dict, dict):
+        return None
+
     with open('kved_results.json', 'w', encoding='UTF-8') as file:
         json.dump(kved_dict, file, indent=4, ensure_ascii=False)
 
 
 def parse_kved(class_code: str):
+    if not isinstance(class_code, str):
+        return None
+
     kved_dict = read_file('kved.json')
-    final_dict = dict(create_dictionary(kved_dict, class_code))
+    final_dict = create_dictionary(kved_dict, class_code)
     write_file(final_dict)
     return final_dict
