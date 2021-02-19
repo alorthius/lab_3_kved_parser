@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 
 def read_file(path: str) -> dict:
-    with open('kved.json', 'r', encoding='utf-8') as file:
+    with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
     return data
 
@@ -66,5 +66,6 @@ def write_file(kved_dict: dict):
 
 def parse_kved(class_code: str):
     kved_dict = read_file('kved.json')
-    final_dict = create_dictionary(kved_dict, class_code)
+    final_dict = dict(create_dictionary(kved_dict, class_code))
     write_file(final_dict)
+    return final_dict
