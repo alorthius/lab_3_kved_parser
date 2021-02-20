@@ -29,7 +29,8 @@ def create_subdict(name: str, type_value: str, num_children: int, parent: dict) 
     Return None if either of the arguments name or type_value is not a string.
 
     >>> create_subdict('Вирощування зернових культур', 'class', None, 'other dict')
-    OrderedDict([('name', 'Вирощування зернових культур'), ('type', 'class'), ('parent', 'other dict')])
+    OrderedDict([('name', 'Вирощування зернових культур'), ('type', 'class'),\
+ ('parent', 'other dict')])
 
     >>> create_subdict('A', 'section', 3, None)
     OrderedDict([('name', 'A'), ('type', 'section'), ('num_children', 3)])
@@ -65,10 +66,10 @@ def create_dictionary(kved_dict: dict, class_code: str) -> OrderedDict:
         all_sections = lst
 
     for section_index in range(len(all_sections)):
-        section_code = all_sections[section_index]['sectionCode']
+        section_name = all_sections[section_index]['sectionName']
         num_children = len(all_sections[section_index]['divisions'])
         section_dict = create_subdict(
-            section_code, 'section', num_children, None)
+            section_name, 'section', num_children, None)
 
         for division in range(len(all_sections[section_index]['divisions'])):
             if division_code != all_sections[section_index]['divisions'][division]['divisionCode']:
@@ -128,4 +129,3 @@ def parse_kved(class_code: str):
     kved_dict = read_file('kved.json')
     final_dict = create_dictionary(kved_dict, class_code)
     write_file(final_dict)
-    return final_dict
